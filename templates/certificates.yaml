@@ -1,0 +1,25 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "vaultwarden.fullname" . }}-ca-issuer
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "vaultwarden.fullname" . }}-selfsigned-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  isCA: true
+  commonName: {{ include "vaultwarden.fullname" . }}-selfsigned-ca
+  secretName: {{ .Values.ingress.tlsSecret }}
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: {{ include "vaultwarden.fullname" . }}-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
